@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -101,3 +102,24 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
+
+
+#Users settings
+AUTH_USER_MODEL = 'users.User'
+
+ROLES = {
+    'DEFAULT_USER_ROLE_PERMISSIONS':{
+        "name":"user",
+        "can_read":True,
+        "can_post_content":True,
+        "can_edit_self_content":True,
+        "can_edit_all_content":False,
+    },
+    'SUPER_USER_PERMISSIONS':{
+        "name":"admin",
+        "can_read":True,
+        "can_post_content":True,
+        "can_edit_self_content":True,
+        "can_edit_all_content":True,
+    }
+}
