@@ -22,7 +22,6 @@ class Role(models.Model):
         default=False
     )
 
-
     def clean(self):
         if self.can_edit_all_content:
             self.can_edit_self_content = True
@@ -50,7 +49,7 @@ class User(AbstractUser):
     )
 
     def clean(self) -> None:
-        #superuser can`t lose his role
+        # superuser can`t lose his role
 
         if self.is_superuser:
             self.role = SUPER_USER_DEAFULT_ROLE[0]
