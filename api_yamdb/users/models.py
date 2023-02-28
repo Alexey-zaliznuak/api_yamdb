@@ -42,17 +42,18 @@ def get_super_user_default_role():
 
 
 class User(AbstractUser):
-    role = models.ForeignKey(
-        Role,
-        on_delete=models.SET_DEFAULT,
-        related_name="Users_with_this_role",
-        verbose_name="User Role",
-        to_field='name',
-        default=get_user_default_role,
-    )
+    # role = models.ForeignKey(
+    #     Role,
+    #     on_delete=models.SET_DEFAULT,
+    #     related_name="Users_with_this_role",
+    #     verbose_name="User Role",
+    #     to_field='name',
+    #     default=get_user_default_role,
+    # )
+    role = models.CharField(max_length=64)
 
-    def clean(self) -> None:
-        # superuser can`t lose his role
+    # def clean(self) -> None:
+    #     # superuser can`t lose his role
 
-        if self.is_superuser:
-            self.role = get_super_user_default_role()
+    #     if self.is_superuser:
+    #         self.role = get_super_user_default_role()
