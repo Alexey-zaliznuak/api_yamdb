@@ -1,10 +1,13 @@
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -23,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
     'reviews.apps.ReviewsConfig',
-    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -108,20 +110,3 @@ STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 # Users settings
 AUTH_USER_MODEL = 'users.User'
-
-ROLES = {
-    'DEFAULT_USER_ROLE_PERMISSIONS': {
-        "name": "user",
-        "can_read": True,
-        "can_post_content": True,
-        "can_edit_self_content": True,
-        "can_edit_all_content": False,
-    },
-    'SUPER_USER_ROLE_PERMISSIONS': {
-        "name": "admin",
-        "can_read": True,
-        "can_post_content": True,
-        "can_edit_self_content": True,
-        "can_edit_all_content": True,
-    }
-}
