@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users'
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -40,7 +40,7 @@ TEMPLATES_DIR = BASE_DIR / 'templates'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,7 +115,7 @@ ROLES = {
         "can_edit_self_content": True,
         "can_edit_all_content": False,
     },
-    'SUPER_USER_PERMISSIONS': {
+    'SUPER_USER_ROLE_PERMISSIONS': {
         "name": "admin",
         "can_read": True,
         "can_post_content": True,
