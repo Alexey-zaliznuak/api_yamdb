@@ -46,14 +46,18 @@ class Title(models.Model):
         validators=[MaxValueValidator(datetime.now().year),
                     MinValueValidator(0)]
     )
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(
+        verbose_name='Описание', blank=True, null=True
+    )
     genre = models.ManyToManyField(
         Genre,
+        verbose_name='Жанр',
         related_name='titles',
         blank=True,
     )
     category = models.ForeignKey(
         Category,
+        verbose_name='Категория',
         on_delete=models.SET_NULL,
         related_name='titles',
         blank=True,
