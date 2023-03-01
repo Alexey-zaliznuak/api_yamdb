@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from api_yamdb.reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title
 from .permissions import IsAuthorOrReadOnly
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
