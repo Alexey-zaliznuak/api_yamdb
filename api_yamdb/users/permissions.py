@@ -28,11 +28,7 @@ class RolePermission(permissions.BasePermission):
             if user == obj.author and user.role in self.can_edit_self_content:
                 return True
 
-            return False
-   
-        # for models such as Genre, Category: they can edit only by admin/moder
-        else:
-            return user.role in self.can_edit_all_content
+        return False
 
 
 # content with this perm. can be edit by users with can_edit_all_content roles
