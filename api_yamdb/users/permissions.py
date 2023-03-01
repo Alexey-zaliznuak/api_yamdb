@@ -17,12 +17,15 @@ class RolePermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj) -> bool:
         user = request.user
 
+        if user.role in self.can_edit_all_content:
+            return True
+
         if request.method in permissions.SAFE_METHODS:
             return True
 
         # author or read only
         if hasattr(obj, 'author'): # not all models has field author
-            if user == obj.author and self.role in self.can_edit_self_content:
+            if user == obj.author and user.role in self.can_edit_self_content:
                 return True
 
             return False
