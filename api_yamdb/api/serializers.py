@@ -1,5 +1,3 @@
-import datetime as dt
-
 from rest_framework import serializers
 
 from reviews.models import Category, Genre, Title
@@ -29,9 +27,11 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         many=True
     )
+
     class Meta:
         fields = '__all__'
         model = Title
+
 
 class TitleListSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)

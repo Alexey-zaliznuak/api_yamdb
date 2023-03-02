@@ -1,35 +1,30 @@
 from rest_framework import viewsets
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.pagination import PageNumberPagination
 
 from reviews.models import Category, Genre, Title
-from .permissions import IsAuthorOrReadOnly
+from users import permissions
+from .mixins import ListCreateDestroyViewSet
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(ListCreateDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAuthorOrReadOnly,)
-    # permission_classes = (IsAuthorOrReadOnly, IsAuthenticated, IsAuthenticatedOrReadOnly)
-    search_fields = ('name',)
-    lookup_field = ('slug',)
-
-    def get_object(self):
-        return get_object_or_404(
-            self.queryset, slug=self.kwargs["slug"])
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    permission_classes = (permissions.CategoriesRolePermission,)
+    pagination_class = PageNumberPagination
+    lookup_field = 'slug'
 
 
-class GenreViewSet(ReadOnlyModelViewSet):
+class GenreViewSet(ListCreateDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (permissions.GenresRolePermission,)
+    pagination_class = PageNumberPagination
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (IsAuthorOrReadOnly, IsAuthenticated)
-
+    permission_classes = (permissions.TitlesRolePermission,)
+    pagination_class = PageNumberPagination
