@@ -1,4 +1,3 @@
-# api_yamdb\reviews\models.py
 from datetime import datetime
 
 from django.core.validators import (RegexValidator, MaxValueValidator,

@@ -5,13 +5,21 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf.urls import url
 
-from .views import TitleViewSet, GenreViewSet, CategoryViewSet
+from .views import TitleViewSet, GenreViewSet, CategoryViewSet, ReviewViewSet, CommentViewSet
 
 router = DefaultRouter()
 
 router.register('titles', TitleViewSet, basename='titles')
 router.register('genres', GenreViewSet, basename='genres')
 router.register('categories', CategoryViewSet, basename='categories')
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews',
+    ReviewViewSet, basename='review'
+)
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+    CommentViewSet, basename='comments'
+)
 
 
 urlpatterns = [
