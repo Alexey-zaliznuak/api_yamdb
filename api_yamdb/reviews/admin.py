@@ -1,6 +1,32 @@
+# api_yamdb\reviews\admin.py
 from django.contrib import admin
 
-from .models import Title, Category, Genre
+from .models import Title, Category, Genre, Comment, Review
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'title',
+        'text',
+        'author',
+        'rating',
+        'pub_date'
+    )
+    list_editable = ('text',)
+    search_fields = ('title', 'text',)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'review',
+        'text',
+        'author',
+        'pub_date'
+    )
+    list_editable = ('text',)
+    search_fields = ('review', 'text',)
 
 
 class TitleAdmin(admin.ModelAdmin):
@@ -11,5 +37,7 @@ class TitleAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Title, TitleAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(Category)
 admin.site.register(Genre)

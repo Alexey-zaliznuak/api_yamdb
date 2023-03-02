@@ -1,8 +1,10 @@
+# api_yamdb\reviews\models.py
 from datetime import datetime
 
 from django.core.validators import (RegexValidator, MaxValueValidator,
                                     MinValueValidator)
 from django.db import models
+from users.models import User
 
 
 class Genre(models.Model):
@@ -49,11 +51,6 @@ class Title(models.Model):
     description = models.TextField(
         verbose_name='Описание', blank=True, null=True
     )
-    # rating = models.IntegerField(
-    #     verbose_name='Рейтинг',
-    #     validators=[MaxValueValidator(10),
-    #                 MinValueValidator(0)],
-    #     default=0,)
     genre = models.ManyToManyField(
         Genre,
         verbose_name='Жанр',
@@ -75,3 +72,78 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Review(models.Model):
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Произведение',
+        db_index=True,
+        null=False
+    )
+    text = models.TextField('Отзыв')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Автор отзыва',
+        db_index=True,
+        null=False
+    )
+    rating = models.PositiveSmallIntegerField(
+        # verbose_name='Оценка',
+        'Оценка',
+        null=False,
+        validators=(
+            MinValueValidator(1, 'Минимум 1',),
+            MaxValueValidator(10, 'Максимум 10',)
+        ),
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
+        db_index=True)
+
+    class Meta:
+        ordering = ('-pub_date',)
+        constraints = (
+            models.UniqueConstraint(
+                fields=('title', 'author',),
+                name='unique_title_author'
+            ),
+        )
+
+    def __str__(self):
+        return self.text[:15]
+
+
+class Comment(models.Model):
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Текст коментария',
+        db_index=True,
+        null=False
+    )
+    text = models.TextField(null=False)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Автор комментария',
+        db_index=True,
+        null=False
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
+        db_index=True)
+
+    class Meta:
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.text[:15]
