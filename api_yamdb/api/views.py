@@ -1,15 +1,13 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 
 from reviews.models import Category, Genre, Title
 from users import permissions
+from .mixins import ListCreateDestroyViewSet
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
 
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(ListCreateDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (permissions.CategoriesRolePermission,)
@@ -17,10 +15,7 @@ class CategoryViewSet(mixins.ListModelMixin,
     lookup_field = 'slug'
 
 
-class GenreViewSet(mixins.ListModelMixin,
-                   mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class GenreViewSet(ListCreateDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (permissions.GenresRolePermission,)

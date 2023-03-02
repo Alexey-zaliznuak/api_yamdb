@@ -49,11 +49,11 @@ class Title(models.Model):
     description = models.TextField(
         verbose_name='Описание', blank=True, null=True
     )
-    rating = models.IntegerField(
-        verbose_name='Рейтинг',
-        validators=[MaxValueValidator(10),
-                    MinValueValidator(0)],
-        default=0,)
+    # rating = models.IntegerField(
+    #     verbose_name='Рейтинг',
+    #     validators=[MaxValueValidator(10),
+    #                 MinValueValidator(0)],
+    #     default=0,)
     genre = models.ManyToManyField(
         Genre,
         verbose_name='Жанр',
