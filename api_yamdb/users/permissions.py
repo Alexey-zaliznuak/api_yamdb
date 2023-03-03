@@ -8,7 +8,7 @@ class RolePermission(permissions.BasePermission):
     can_edit_all_content = ('admin',)
 
     # this roles can edit only content what they created
-    can_edit_self_content = ('user',)
+    can_edit_self_content = ('user', 'moderator')
 
     def has_permission(self, request, view) -> bool:
         if request.method in permissions.SAFE_METHODS:
@@ -37,9 +37,19 @@ class AdminOrReadOnlyRolePermission(RolePermission):
 
 
 # edit content if you are author or moderator/admin
-class AuthorOrCanEditAllRolePermission(RolePermission):
+class AuthorOrModeratorCanEditAllRolePermission(RolePermission):
     can_edit_self_content = ('user')
     can_edit_all_content = ('moderator', 'admin')
+
+
+class OnlyRolePermission():
+    roles = ('Admin')
+
+    def has_permission(self, request, view) -> bool:
+        if request.user.role in self.roles:
+            return True
+        
+        return False
 
 
 # AdminOrReadOnly permissions
@@ -48,5 +58,7 @@ CategoriesRolePermission = AdminOrReadOnlyRolePermission
 GenresRolePermission = AdminOrReadOnlyRolePermission
 
 # author or 'can_edit_all' permission
-ReviewsRolePermission = AuthorOrCanEditAllRolePermission
-CommentsRolePermission = AuthorOrCanEditAllRolePermission
+ReviewsRolePermission = AuthorOrModeratorCanEditAllRolePermission
+CommentsRolePermission = AuthorOrModeratorCanEditAllRolePermission
+
+UserRolePermission = RolePermission

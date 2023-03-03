@@ -16,6 +16,7 @@ router.register('genre', GenreViewSet, basename='genre')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
+    path('v1/', include('users.urls')),
 ]
 
 schema_view = get_schema_view(
@@ -38,4 +39,4 @@ urlpatterns += [
        name='schema-swagger-ui'),
    url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), 
        name='schema-redoc'),
-] 
+]
