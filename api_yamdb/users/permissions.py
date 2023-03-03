@@ -53,11 +53,11 @@ class OnlyRolePermission():
 
 
 # AdminOrReadOnly permissions
-TitlesRolePermission = AdminOrReadOnlyRolePermission
 CategoriesRolePermission = AdminOrReadOnlyRolePermission
 GenresRolePermission = AdminOrReadOnlyRolePermission
 
 # author or 'can_edit_all' permission
+TitlesRolePermission = AuthorOrModeratorCanEditAllRolePermission
 ReviewsRolePermission = AuthorOrModeratorCanEditAllRolePermission
 CommentsRolePermission = AuthorOrModeratorCanEditAllRolePermission
 
