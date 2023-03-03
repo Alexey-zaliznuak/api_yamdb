@@ -1,6 +1,27 @@
 from django.contrib import admin
 
-from .models import Title, Category, Genre
+from .models import Title, Category, Genre, Comment, Review
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        'author',
+        'title',
+        'score',
+        'pub_date'
+    )
+    list_editable = ('text',)
+    search_fields = ('title', 'text',)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'author',
+        'review',
+        'pub_date'
+    )
+    list_editable = ('text',)
+    search_fields = ('review', 'text',)
 
 
 class TitleAdmin(admin.ModelAdmin):
@@ -11,5 +32,7 @@ class TitleAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Title, TitleAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(Category)
 admin.site.register(Genre)

@@ -1,6 +1,12 @@
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Comment, Review
+
+
+class ErrorResponse:
+
+    NOT_ALLOWED = 'Отзыв уже оставлен.'
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -41,3 +47,32 @@ class TitleListSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Title
         read_only_fields = ('id',)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    title = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=Title.objects.all(),
+        required=False
+    )
+    author = SlugRelatedField(
+        default=serializers.CurrentUserDefault(),
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(
+        default=serializers.CurrentUserDefault(),
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        model = Comment
+        exclude = ('review',)
