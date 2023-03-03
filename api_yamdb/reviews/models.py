@@ -91,9 +91,8 @@ class Review(models.Model):
         db_index=True,
         null=False
     )
-    rating = models.PositiveSmallIntegerField(
-        # verbose_name='Оценка',
-        'Оценка',
+    score = models.PositiveSmallIntegerField(
+        verbose_name='Оценка',
         null=False,
         validators=(
             MinValueValidator(1, 'Минимум 1',),

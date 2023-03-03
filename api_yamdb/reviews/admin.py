@@ -9,7 +9,7 @@ class ReviewAdmin(admin.ModelAdmin):
         'title',
         'text',
         'author',
-        'rating',
+        'score',
         'pub_date'
     )
     list_editable = ('text',)
