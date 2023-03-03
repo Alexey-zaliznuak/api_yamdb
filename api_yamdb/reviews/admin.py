@@ -5,10 +5,8 @@ from .models import Title, Category, Genre, Comment, Review
 
 class ReviewAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
-        'title',
-        'text',
         'author',
+        'title',
         'score',
         'pub_date'
     )
@@ -18,10 +16,8 @@ class ReviewAdmin(admin.ModelAdmin):
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
-        'review',
-        'text',
         'author',
+        'review',
         'pub_date'
     )
     list_editable = ('text',)
