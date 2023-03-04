@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import User
 from .tokens import generate_user_confirm_code, get_user_jwt_token
-from .serializers import UserSerializer
-from .validators import validate_username, validate_email
+from .serializers import UserSerializer, SignUpSerializer
+from .validators import validate_username, validate_email, validate_code
 
 from rest_framework.decorators import action
 from rest_framework import viewsets
@@ -22,7 +22,7 @@ from rest_framework.renderers import JSONRenderer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    # permission_classes = (IsAuthenticated, IsAdminUser)
     filter_backends = (filters.SearchFilter, )
     lookup_field = 'username'
     search_fields = ('username',)
@@ -44,27 +44,15 @@ class AUTHApiView(viewsets.ViewSet):
 
     @action(methods=["post"],detail=False)
     def signup(self, request):
-        username = request.data.get('username')
-        email = request.data.get('email')
+        seriaizer = SignUpSerializer(data=request.data)
+        seriaizer.is_valid(raise_exception=True)
 
-        username_error = validate_username(username)
-        email_error = validate_email(email)
-        if email_error or username_error:
-            content = {
-                "erorr":"not valid data",
-                'username_error': username_error,
-                'email_error': email_error,
-            }
-
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
-
-        user, _ = User.objects.get_or_create(
-            username=username,
-            email=email,
+        user, created = User.objects.get_or_create(
+            **seriaizer.validated_data,
+            confirm_code = generate_user_confirm_code()
         )
 
-        if not user.confirm_code:
-            user.confirm_code = generate_user_confirm_code(user)
+        print(created)
 
         send_mail(
             'Hi! you have made the request on APIYaMDb.',
@@ -73,31 +61,33 @@ class AUTHApiView(viewsets.ViewSet):
                 f'Your confirm code: "{user.confirm_code}"'
             ),
             os.getenv("EMAIL_HOST_USER"),
-            [email],
+            [user.email],
             fail_silently=False,
         )
 
-        return JsonResponse({'username':username, 'email':email})
+        return JsonResponse(request.data)
 
     @action(methods=["post"],detail=False)
     def token(self, request):
         username = request.data.get('username')
         code = request.data.get('confirmation_code')
 
-        username_error = validate_username(username)
-        code_error = None if isinstance(code, str) else 'code must be str'
+        if not all([username, code]):
+            return Response(
+                {'msg': [username]},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        if code_error or username_error:
-            content = {
-                "erorr":"not valid data",
-                'username_error': username_error,
-                'email_confirm_code_error': code_error,
-            }
+        print(User.objects.all())      
+        user = get_object_or_404(User, username=username)
 
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
-
-        user = get_object_or_404(User, username=username, confirm_code=code)
+        code_error = validate_code(code)
+        if code_error:
+            return Response(
+                {'msg': code_error},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(
-            {'token':get_user_jwt_token(user)},
+            {'token':get_user_jwt_token(user.first())},
         )

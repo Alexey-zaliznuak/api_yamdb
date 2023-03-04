@@ -20,3 +20,9 @@ def validate_email(email):
         MaxLengthValidator(254)(email)
     except ValidationError as e:
         return e.message
+
+def validate_code(code):
+    if not isinstance(code, str):
+        return 'code must be str'
+    if len(code) < 6:
+        return 'invalid code len'
