@@ -1,6 +1,7 @@
 import pandas as pd
 from django.core.management.base import BaseCommand
-from reviews.models import Category, Genre, Title
+
+from reviews.models import Category, Genre, Title, User, Review, Comment
 
 
 def read_csv(name):
@@ -31,6 +32,7 @@ def import_genre():
     ]
     Genre.objects.bulk_create(data)
 
+
 def import_titles():
     data = [
         Title(
@@ -47,9 +49,58 @@ def import_titles():
         title = Title.objects.get(pk=row['title_id'])
         genre = Genre.objects.get(pk=row['genre_id'])
         title.genre.add(genre)
+
+
+def import_users():
+    data = [
+        User(
+            id=row['id'],
+            username=row['username'],
+            first_name=row['first_name'],
+            last_name=row['last_name'],
+            email=row['email'],
+            bio=row['bio'],
+            role=row['role'],
+        )
+        for i, row in read_csv("users").iterrows()
+    ]
+    User.objects.bulk_create(data)
+
+
+def import_review():
+    data = [
+        Review(
+            id=row['id'],
+            text=row['text'],
+            score=row['score'],
+            pub_date=row['pub_date'],
+            author=User.objects.get(pk=row['author']),
+            title=Title.objects.get(pk=row['title_id']),
+        )
+        for i, row in read_csv("review").iterrows()
+    ]
+    Review.objects.bulk_create(data)
+
+
+def import_comments():
+    data = [
+        Comment(
+            review_id=row['review_id'],
+            text=row['text'],
+            author=User.objects.get(pk=row['author']),
+            pub_date=row['pub_date'],
+        )
+        for i, row in read_csv("comments").iterrows()
+    ]
+    Comment.objects.bulk_create(data)
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        import_users()
         import_category()
         import_genre()
         import_titles()
+        import_review()
+        import_comments()
         print('Импорт завершен!')
