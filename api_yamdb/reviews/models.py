@@ -1,8 +1,10 @@
 from datetime import datetime
 
-from django.core.validators import (RegexValidator, MaxValueValidator,
+from django.core.validators import (RegexValidator,
+                                    MaxValueValidator,
                                     MinValueValidator)
 from django.db import models
+
 from users.models import User
 
 
@@ -95,8 +97,8 @@ class Review(models.Model):
         verbose_name='Оценка',
         null=False,
         validators=(
-            MinValueValidator(1, 'Минимум 1',),
-            MaxValueValidator(10, 'Максимум 10',)
+            MinValueValidator(1, 'Минимум 1', ),
+            MaxValueValidator(10, 'Максимум 10', )
         ),
     )
     pub_date = models.DateTimeField(
