@@ -7,6 +7,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = (
         'author',
         'title',
+        'text',
         'score',
         'pub_date'
     )
@@ -17,6 +18,7 @@ class ReviewAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
         'author',
+        'text',
         'review',
         'pub_date'
     )
