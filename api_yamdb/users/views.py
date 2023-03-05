@@ -23,13 +23,14 @@ from rest_framework.pagination import PageNumberPagination
 
 
 def send_confirm_code(user):
-    user.email_user(
+    send_mail(
         'Hi! you have made the request on APIYaMDb.',
         (
             'Hi! you have made the request on APIYaMDb.'
             f'Your confirm code: "{user.confirm_code}"'
         ),
         os.getenv("EMAIL_HOST_USER"),
+        [user.email]
     )
     print("success send email")
 
