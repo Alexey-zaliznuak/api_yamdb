@@ -8,6 +8,8 @@ from .models import User
 from .tokens import generate_user_confirm_code, get_user_jwt_token
 from .serializers import UserSerializer, SignUpSerializer
 from .validators import validate_username, validate_email, validate_code
+from .permissions import IsAdminUserOrRoleAdmin, AdminOrReadOnlyRolePermission, UserRolePermission
+# from .mixins import UserMixinsViewSet
 
 from rest_framework.decorators import action
 from rest_framework import viewsets
@@ -17,23 +19,51 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import filters
 from rest_framework.renderers import JSONRenderer
+from rest_framework.pagination import PageNumberPagination
+
+
+def send_confirm_code(user):
+    user.email_user(
+        'Hi! you have made the request on APIYaMDb.',
+        (
+            'Hi! you have made the request on APIYaMDb.'
+            f'Your confirm code: "{user.confirm_code}"'
+        ),
+        os.getenv("EMAIL_HOST_USER"),
+    )
+    print("success send email")
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = (IsAuthenticated, IsAdminUserOrRoleAdmin)
     filter_backends = (filters.SearchFilter, )
+    pagination_class = PageNumberPagination 
     lookup_field = 'username'
     search_fields = ('username',)
+    http_method_names = ['get', 'post', "patch", 'delete']
 
-    @action(detail=False, filter_backends=(), url_path='me', name = "Get me")
+    @action(
+        methods=['GET'],
+        permission_classes=(IsAuthenticated,),
+        detail=False,
+        filter_backends=(),
+        url_path='me',
+        name = "Get me",
+    )
     def get_me(self, request):
         self.kwargs.update(username=request.user.username)
         return self.retrieve(request, request.user.username)
 
+    @action(
+        methods=['PATCH'],
+        detail=False,
+        permission_classes = (IsAuthenticated, ),
+        filter_backends=(),
+        url_path='me'
+    )
     @get_me.mapping.patch
-    # @action(methods=['PATCH'], detail=False, filter_backends=(), url_path='me')
     def patch_me(self, request):
         self.kwargs.update(username=request.user.username)
         return self.update(request, request.user.username)
@@ -42,28 +72,49 @@ class UserViewSet(viewsets.ModelViewSet):
 class AUTHApiView(viewsets.ViewSet):
     permission_classes = ()
 
-    @action(methods=["post"],detail=False)
+    @action(methods=["post"], detail=False)
     def signup(self, request):
-        seriaizer = SignUpSerializer(data=request.data)
-        seriaizer.is_valid(raise_exception=True)
+        username = request.data.get('username')
+        email = request.data.get('email')
 
-        user, created = User.objects.get_or_create(
-            **seriaizer.validated_data,
-            confirm_code = generate_user_confirm_code()
+        if not all([email, username]):
+            return Response(
+                {
+                    'email':'' if email else ['not null constait failed'],
+                    'username':'' if username else ['not null constrait failed']
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not User.objects.filter(username=username,email=email).exists():
+            if (
+                User.objects.filter(username=username).exists()
+                or User.objects.filter(email=email).exists()
+            ):
+                return Response(
+                    'uncorrect email/username',
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            seriaizer = SignUpSerializer(data=request.data)
+            seriaizer.is_valid(raise_exception=True)
+
+            send_confirm_code(
+                User.objects.create(
+                    **seriaizer.validated_data,
+                    confirm_code = generate_user_confirm_code()
+                )
+            )
+
+        user = User.objects.get(
+            username=request.data['username'],
+            email=request.data['email'],
         )
+        if not user.confirm_code:
+            user.confirm_code = generate_user_confirm_code()
+            user.save()
 
-        print(created)
-
-        send_mail(
-            'Hi! you have made the request on APIYaMDb.',
-            (
-                'Hi! you have made the request on APIYaMDb.'
-                f'Your confirm code: "{user.confirm_code}"'
-            ),
-            os.getenv("EMAIL_HOST_USER"),
-            [user.email],
-            fail_silently=False,
-        )
+        send_confirm_code(user)
 
         return JsonResponse(request.data)
 
@@ -89,5 +140,5 @@ class AUTHApiView(viewsets.ViewSet):
             )
 
         return Response(
-            {'token':get_user_jwt_token(user.first())},
+            {'token':get_user_jwt_token(user)},
         )

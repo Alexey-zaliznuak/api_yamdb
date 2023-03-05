@@ -10,7 +10,7 @@ class User(AbstractUser):
         MODERATOR = 'moderator', _('Moderator')
         ADMIN = 'admin', _('Administrator')
 
-    email = models.EmailField(_('email address'))
+    email = models.EmailField(_('email address'), max_length=254, unique=True)
     bio = models.TextField("biography", max_length=500, null=True)
     role = models.CharField(
         "user role",
@@ -22,8 +22,11 @@ class User(AbstractUser):
 
     def clean(self) -> None:
         # superuser can`t lose his role
-        if self.is_superuser:
+        if self.is_staff or self.is_superuser:
             self.role = self.Roles.ADMIN
 
         if self.username == 'me':
             raise ValidationError('uncorrect username')
+
+    def __str__(self) -> str:
+        return self.email + " " + self.username

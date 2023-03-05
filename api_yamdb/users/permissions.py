@@ -8,19 +8,23 @@ class RolePermission(permissions.BasePermission):
     can_edit_all_content = ('admin',)
 
     # this roles can edit only content what they created
-    can_edit_self_content = ('user', 'moderator')
+    can_edit_self_content = ('user', 'moderator',)
 
     def has_permission(self, request, view) -> bool:
+        self.can_edit_self_content += self.can_edit_all_content
+
         if request.method in permissions.SAFE_METHODS:
             return True
+
+        return request.user.role in self.can_edit_self_content
+
 
     def has_object_permission(self, request, view, obj) -> bool:
         user = request.user
-
-        if user.role in self.can_edit_all_content:
+        if request.method in permissions.SAFE_METHODS:
             return True
 
-        if request.method in permissions.SAFE_METHODS:
+        if user.role in self.can_edit_all_content:
             return True
 
         # author or read only
@@ -33,12 +37,12 @@ class RolePermission(permissions.BasePermission):
 
 # content with this perm. can be edit by users with can_edit_all_content roles
 class AdminOrReadOnlyRolePermission(RolePermission):
-    can_edit_all_content = ('admin')
+    can_edit_all_content = ('admin',)
 
 
 # edit content if you are author or moderator/admin
 class AuthorOrModeratorCanEditAllRolePermission(RolePermission):
-    can_edit_self_content = ('user')
+    can_edit_self_content = ('user',)
     can_edit_all_content = ('moderator', 'admin')
 
 
@@ -52,6 +56,14 @@ class OnlyRolePermission():
         return False
 
 
+class IsAdminUserOrRoleAdmin(permissions.BasePermission):
+    def has_permission(self, request, view) -> bool:
+        user = request.user
+
+        if user.is_staff or user.is_superuser or user.role == 'admin':
+            return True
+
+
 # AdminOrReadOnly permissions
 CategoriesRolePermission = AdminOrReadOnlyRolePermission
 GenresRolePermission = AdminOrReadOnlyRolePermission
@@ -61,4 +73,4 @@ TitlesRolePermission = AuthorOrModeratorCanEditAllRolePermission
 ReviewsRolePermission = AuthorOrModeratorCanEditAllRolePermission
 CommentsRolePermission = AuthorOrModeratorCanEditAllRolePermission
 
-UserRolePermission = RolePermission
+UserRolePermission = IsAdminUserOrRoleAdmin

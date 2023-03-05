@@ -15,5 +15,12 @@ class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
     username = serializers.CharField(
         max_length=150,
-        validators=[UnicodeUsernameValidator],
     )
+
+    def validate_username(sef, value):
+        UnicodeUsernameValidator()(value)
+
+        if value == 'me':
+            raise ValidationError('uncorrect username')
+
+        return value
