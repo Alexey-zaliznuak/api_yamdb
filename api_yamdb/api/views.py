@@ -46,6 +46,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = self.request.user
         serializer.save(author=user, title=title)
 
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return (AllowAny(),)
+        return (permissions.RolePermission(),)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -54,6 +59,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         review_id = int(self.kwargs.get('review_id'))
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
+
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return (AllowAny(),)
+        return (permissions.RolePermission(),)
 
     def perform_create(self, serializer):
         review_id = int(self.kwargs.get('review_id'))
