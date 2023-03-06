@@ -22,15 +22,16 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = ('slug')
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class TitleWriteSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
+        slug_field='slug',
         queryset=Category.objects.all(),
-        slug_field='slug'
+        required=False,
     )
     genre = serializers.SlugRelatedField(
-        queryset=Genre.objects.all(),
         slug_field='slug',
-        many=True
+        queryset=Genre.objects.all(),
+        many=True,
     )
 
     class Meta:
@@ -38,14 +39,13 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
 
-class TitleListSerializer(serializers.ModelSerializer):
+class TitleReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
 
     class Meta:
         fields = '__all__'
         model = Title
-        read_only_fields = ('id',)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
