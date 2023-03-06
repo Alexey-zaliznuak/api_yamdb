@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, SAFE_METHODS
+
 from reviews.models import Category, Genre, Title, Review
 from users import permissions
-from users.permissions import ErmTitle, TitlesRolePermission
-
+from users.permissions import TitlesRolePermission
+from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
 from .serializers import CategorySerializer, GenreSerializer, \
     CommentSerializer, ReviewSerializer, TitleReadSerializer, \
@@ -27,6 +29,10 @@ class GenreViewSet(ListCreateDestroyViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     permission_classes = (TitlesRolePermission,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+    # permission_classes = (ErmTitle,)
+
     pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
