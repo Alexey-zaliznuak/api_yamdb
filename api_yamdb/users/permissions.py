@@ -41,6 +41,7 @@ class RolePermission(permissions.BasePermission):
 # content with this perm. can be edit by users with can_edit_all_content roles
 class AdminOrReadOnlyRolePermission(RolePermission):
     can_edit_all_content = ('admin',)
+    can_edit_self_content = ()
 
 
 # edit content if you are author or moderator/admin
@@ -95,9 +96,9 @@ class ErmTitle(permissions.BasePermission):
 # AdminOrReadOnly permissions
 CategoriesRolePermission = AdminOrReadOnlyRolePermission
 GenresRolePermission = AdminOrReadOnlyRolePermission
+TitlesRolePermission = AdminOrReadOnlyRolePermission
 
 # author or 'can_edit_all' permission
-TitlesRolePermission = AuthorOrModeratorCanEditAllRolePermission
 ReviewsRolePermission = AuthorOrModeratorCanEditAllRolePermission
 CommentsRolePermission = AuthorOrModeratorCanEditAllRolePermission
 
