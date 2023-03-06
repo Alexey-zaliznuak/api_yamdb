@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
 from reviews.models import Category, Genre, Title, Comment, Review
+from django.shortcuts import get_object_or_404
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -59,6 +60,19 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+
+    def validate(self, data):
+        request = self.context['request']
+        author = request.user
+        title_id = self.context['view'].kwargs.get('title_id')
+        if (
+            request.method == 'POST'
+            and Review.objects.filter(
+                author_id=author.id, title_id=title_id
+            ).exists()
+        ):
+            raise serializers.ValidationError('Можно оставить только один отзыв на произведение!')
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
