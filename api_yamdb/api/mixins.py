@@ -11,4 +11,4 @@ class ListCreateDestroyViewSet(mixins.ListModelMixin,
     pagination_class = PageNumberPagination
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = (ermtest,)
+    # permission_classes = (ermtest,)

@@ -4,7 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, SAFE_METHODS
 from reviews.models import Category, Genre, Title, Review
 from users import permissions
-from users.permissions import ErmTitle
+from users.permissions import ErmTitle, TitlesRolePermission
 
 from .mixins import ListCreateDestroyViewSet
 from .serializers import CategorySerializer, GenreSerializer, \
@@ -26,7 +26,8 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    permission_classes = (ErmTitle,)
+    permission_classes = (TitlesRolePermission,)
+    # permission_classes = (ErmTitle,)
     pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
