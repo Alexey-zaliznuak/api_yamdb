@@ -32,6 +32,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     # permission_classes = (ErmTitle,)
+
     pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
@@ -57,7 +58,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'list' or self.action == 'retrieve':
             return (AllowAny(),)
-        return (permissions.RolePermission(),)
+        return (permissions.ReviewsRolePermission(),)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -71,7 +72,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'list' or self.action == 'retrieve':
             return (AllowAny(),)
-        return (permissions.RolePermission(),)
+        return (permissions.CommentsRolePermission(),)
 
     def perform_create(self, serializer):
         review_id = int(self.kwargs.get('review_id'))
