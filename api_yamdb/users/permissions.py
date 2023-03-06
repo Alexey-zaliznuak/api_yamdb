@@ -18,7 +18,6 @@ class RolePermission(permissions.BasePermission):
 
         return request.user.role in self.can_edit_self_content
 
-
     def has_object_permission(self, request, view, obj) -> bool:
         user = request.user
         if request.method in permissions.SAFE_METHODS:
@@ -28,7 +27,7 @@ class RolePermission(permissions.BasePermission):
             return True
 
         # author or read only
-        if hasattr(obj, 'author'): # not all models has field author
+        if hasattr(obj, 'author'):  # not all models has field author
             if user == obj.author and user.role in self.can_edit_self_content:
                 return True
 
@@ -52,7 +51,7 @@ class OnlyRolePermission():
     def has_permission(self, request, view) -> bool:
         if request.user.role in self.roles:
             return True
-        
+
         return False
 
 
@@ -62,6 +61,15 @@ class IsAdminUserOrRoleAdmin(permissions.BasePermission):
 
         if user.is_staff or user.is_superuser or user.role == 'admin':
             return True
+        return False
+
+
+class ermtest(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return (
+                request.method in permissions.SAFE_METHODS or
+                (request.user.is_authenticated and request.user.role == 'admin')
+        )
 
 
 # AdminOrReadOnly permissions

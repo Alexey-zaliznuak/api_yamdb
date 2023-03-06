@@ -5,13 +5,12 @@ from reviews.models import Category, Genre, Title, Comment, Review
 
 
 class ErrorResponse:
-
     NOT_ALLOWED = 'Отзыв уже оставлен.'
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        exclude = ('id',)
+        fields = ("name", "slug")
         model = Category
         lookup_field = ('slug')
 
