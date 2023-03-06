@@ -4,21 +4,17 @@ from rest_framework.relations import SlugRelatedField
 from reviews.models import Category, Genre, Title, Comment, Review
 
 
-class ErrorResponse:
-    NOT_ALLOWED = 'Отзыв уже оставлен.'
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ("name", "slug")
         model = Category
+        fields = ("name", "slug")
         lookup_field = ('slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        exclude = ('id',)
         model = Genre
+        exclude = ('id',)
         lookup_field = ('slug')
 
 

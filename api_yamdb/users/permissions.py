@@ -50,16 +50,6 @@ class AuthorOrModeratorCanEditAllRolePermission(RolePermission):
     can_edit_all_content = ('moderator', 'admin')
 
 
-class OnlyRolePermission():
-    roles = ('Admin',)
-
-    def has_permission(self, request, view) -> bool:
-        if request.user.role in self.roles:
-            return True
-
-        return False
-
-
 class IsAdminUserOrRoleAdmin(permissions.BasePermission):
     def has_permission(self, request, view) -> bool:
         user = request.user
@@ -67,30 +57,6 @@ class IsAdminUserOrRoleAdmin(permissions.BasePermission):
         if user.is_staff or user.is_superuser or user.role == 'admin':
             return True
         return False
-
-
-class ermtest(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (
-                request.method in permissions.SAFE_METHODS or
-                (request.user.is_authenticated and request.user.role == 'admin')
-        )
-
-
-class ErmTitle(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (
-                request.method in permissions.SAFE_METHODS
-                or request.user.is_authenticated
-        )
-
-    def has_object_permission(self, request, view, obj):
-        return (
-                request.method in permissions.SAFE_METHODS
-                or request.user.role == 'admin'
-                or request.user.role == 'moderator'
-                or obj.author == request.user
-        )
 
 
 # AdminOrReadOnly permissions

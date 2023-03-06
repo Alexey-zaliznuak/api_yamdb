@@ -11,5 +11,11 @@ urlpatterns = [
         name='redoc'
     ),
     path('api/', include('api.urls')),
-    path('', RedirectView.as_view(url=reverse_lazy('schema-swagger-ui')), name='index')
+    path(
+        '',
+        RedirectView.as_view(
+            url=reverse_lazy('schema-swagger-ui')
+        ),
+        name='index'
+    )
 ]
