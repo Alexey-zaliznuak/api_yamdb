@@ -9,7 +9,7 @@ from users.models import User
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Название')
+    name = models.CharField(max_length=255, verbose_name='Название')
     slug = models.SlugField(
         max_length=50,
         unique=True,
@@ -26,7 +26,7 @@ class Genre(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Название')
+    name = models.CharField(max_length=255, verbose_name='Название')
     slug = models.SlugField(
         max_length=50,
         unique=True,
@@ -43,7 +43,7 @@ class Category(models.Model):
 
 
 class Title(models.Model):
-    name = models.TextField(verbose_name='Название')
+    name = models.TextField(max_length=255, verbose_name='Название')
     year = models.IntegerField(
         verbose_name='Год произведения',
         validators=[MaxValueValidator(datetime.now().year),
