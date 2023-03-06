@@ -16,10 +16,14 @@ class RolePermission(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
+        if request.user.is_anonymous:
+            return False
+
         return request.user.role in self.can_edit_self_content
 
     def has_object_permission(self, request, view, obj) -> bool:
         user = request.user
+
         if request.method in permissions.SAFE_METHODS:
             return True
 

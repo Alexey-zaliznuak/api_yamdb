@@ -12,13 +12,13 @@ from rest_framework.permissions import AllowAny
 class CategoryViewSet(ListCreateDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes = (permissions.CategoriesRolePermission,)
+    permission_classes = (permissions.CategoriesRolePermission,)
 
 
 class GenreViewSet(ListCreateDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    # permission_classes = (permissions.GenresRolePermission,)
+    permission_classes = (permissions.GenresRolePermission,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
