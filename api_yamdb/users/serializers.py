@@ -16,6 +16,18 @@ class UserSerializer(serializers.ModelSerializer):
             'role'
         ]
 
+class PatchUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+        ]
+        read_only_fields = ('role', )
+        exclude = ('role', )
 
 class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)

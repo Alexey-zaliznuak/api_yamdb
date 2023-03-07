@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import User
 from .tokens import generate_user_confirm_code, get_user_jwt_token
-from .serializers import UserSerializer, SignUpSerializer
+from .serializers import UserSerializer, SignUpSerializer, PatchUserSerializer
 from .permissions import IsAdminUserOrRoleAdmin
 
 from rest_framework.decorators import action
@@ -44,13 +44,14 @@ class UserViewSet(viewsets.ModelViewSet):
         methods=['PATCH'],
         detail=False,
         permission_classes=(IsAuthenticated, ),
+        serializer_class=PatchUserSerializer,
         filter_backends=(),
         url_path='me'
     )
     @get_me.mapping.patch
     def patch_me(self, request):
         self.kwargs.update(username=request.user.username)
-        return self.update(request, request.user.username)
+        return self.partial_update(request, request.user.username)
 
 
 class AUTHApiView(viewsets.ViewSet):
@@ -89,6 +90,7 @@ class AUTHApiView(viewsets.ViewSet):
                     confirm_code=generate_user_confirm_code()
                 )
             )
+            return JsonResponse(request.data)
 
         user = User.objects.get(
             username=request.data['username'],
@@ -136,7 +138,7 @@ class AUTHApiView(viewsets.ViewSet):
             os.getenv("EMAIL_HOST_USER"),
             [user.email]
         )
-        print("success send email")
+        print('sensendsendsend')
 
     def validate_code(self, code):
         if not isinstance(code, str):
