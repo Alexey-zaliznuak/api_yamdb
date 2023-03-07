@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import User
 from .tokens import generate_user_confirm_code, get_user_jwt_token
-from .serializers import UserSerializer, SignUpSerializer, PatchUserSerializer
+from .serializers import UserSerializer, SignUpSerializer, MeUserSerializer
 from .permissions import IsAdminUserOrRoleAdmin
 
 from rest_framework.decorators import action
@@ -29,29 +29,18 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', "patch", 'delete']
 
     @action(
-        methods=['GET'],
+        methods=['PATCH', 'GET'],
+        detail=False,
         permission_classes=(IsAuthenticated,),
-        detail=False,
         filter_backends=(),
-        url_path='me',
-        name="Get me",
+        serializer_class=MeUserSerializer,
     )
-    def get_me(self, request):
+    def me(self, request):
         self.kwargs.update(username=request.user.username)
-        return self.retrieve(request, request.user.username)
+        if request.method == 'PATCH':
+            return self.partial_update(request, request.user.username)
 
-    @action(
-        methods=['PATCH'],
-        detail=False,
-        permission_classes=(IsAuthenticated, ),
-        serializer_class=PatchUserSerializer,
-        filter_backends=(),
-        url_path='me'
-    )
-    @get_me.mapping.patch
-    def patch_me(self, request):
-        self.kwargs.update(username=request.user.username)
-        return self.partial_update(request, request.user.username)
+        return self.retrieve(request, request.user.username)
 
 
 class AUTHApiView(viewsets.ViewSet):
