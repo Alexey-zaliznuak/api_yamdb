@@ -18,7 +18,7 @@ class User(AbstractUser):
         choices=Roles.choices,
         default=Roles.USER,
     )
-    confirm_code = models.CharField(editable=False, max_length=64)
+    confirmation_code = models.CharField(editable=False, max_length=64)
 
     def clean(self) -> None:
         # superuser can`t lose his role

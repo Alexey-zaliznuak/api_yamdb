@@ -44,3 +44,25 @@ class SignUpSerializer(serializers.Serializer):
             raise ValidationError('uncorrect username')
 
         return value
+
+    def validate(self, data):
+        username = data['username']
+        email = data['email']
+
+        if not User.objects.filter(username=username, email=email).exists():
+            if (
+                User.objects.filter(username=username).exists()
+                or User.objects.filter(email=email).exists()
+            ):
+                raise ValidationError('uncorrect email/username')
+
+        return data
+
+
+class GetTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'confirmation_code'
+        ]
