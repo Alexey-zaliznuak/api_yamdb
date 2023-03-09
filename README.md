@@ -50,3 +50,9 @@ python manage.py runserver
 ```
 python manage.py importcsv
 ```
+
+## Authors
+
+- [@EugeneErmakov](https://github.com/EugeneErmakov)
+- [@Vas252](https://github.com/Vas252)
+- [@Alexey](https://github.com/Alexey-zaliznuak)
