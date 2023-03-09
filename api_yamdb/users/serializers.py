@@ -58,6 +58,7 @@ class SignUpSerializer(serializers.Serializer):
 
         return data
 
+
 class GetTokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

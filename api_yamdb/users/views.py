@@ -10,13 +10,12 @@ from .serializers import (
     UserSerializer,
     SignUpSerializer,
     MeUserSerializer,
-    GetTokenSerializer,    
+    GetTokenSerializer,
 )
 from .permissions import IsAdminUserOrRoleAdmin
 
 from rest_framework.decorators import action
 from rest_framework import viewsets
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import filters
@@ -67,7 +66,7 @@ class AUTHApiView(viewsets.ViewSet):
             )
             return JsonResponse(request.data)
 
-        user =  get_object_or_404(User, **seriaizer.validated_data)
+        user = get_object_or_404(User, **seriaizer.validated_data)
         self.send_confirm_code(user)
 
         return JsonResponse(request.data)
