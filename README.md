@@ -4,6 +4,7 @@ Api for YaMDb
 
 created by
 [redoc documentation](/api_yamdb/static/redoc.yaml)
+You can see that on /redoc after start the server
 
 ### Technology
 Python 3.9
@@ -44,4 +45,8 @@ pip install -r requirements.txt
 - In the folder with manage.py run next command:
 ```
 python manage.py runserver
+```
+- You may load test data by:
+```
+python manage.py importcsv
 ```
