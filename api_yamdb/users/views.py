@@ -58,9 +58,7 @@ class AUTHApiView(viewsets.ViewSet):
 
         seriaizer = SignUpSerializer(data=request.data)
         seriaizer.is_valid(raise_exception=True)
-        print('abobaabobaaboba')
         if not User.objects.filter(username=username, email=email).exists():
-            print("wwwwwwwwwtttttttttfffffff")
             self.send_confirm_code(
                 User.objects.create(
                     **seriaizer.validated_data,
