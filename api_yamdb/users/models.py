@@ -28,5 +28,13 @@ class User(AbstractUser):
         if self.username == 'me':
             raise ValidationError('uncorrect username')
 
+    @property
+    def has_admin_permissions(self) -> bool:
+        return (
+            self.is_staff
+            or self.is_superuser
+            or self.role == self.Roles.ADMIN
+        )
+
     def __str__(self) -> str:
         return self.email + " " + self.username
