@@ -2,6 +2,11 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+
+
+MIN_CODE_LEN = 6
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,22 +18,21 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'bio',
-            'role'
-        ]
-
-
-class MeUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'username',
-            'email',
-            'first_name',
-            'last_name',
-            'bio',
             'role',
         ]
-        read_only_fields = ('role', )
+
+    def update(self, user, validated_data):
+        for key, value in validated_data.items():
+            if (
+                key == 'role'
+                and not user.has_admin_permissions
+            ):
+                value = user.role
+
+            user.__setattr__(key, value)
+
+        user.save()
+        return user
 
 
 class SignUpSerializer(serializers.Serializer):
@@ -50,19 +54,26 @@ class SignUpSerializer(serializers.Serializer):
         email = data['email']
 
         if not User.objects.filter(username=username, email=email).exists():
-            if (
-                User.objects.filter(username=username).exists()
-                or User.objects.filter(email=email).exists()
-            ):
+            if User.objects.filter(Q(username=username) | Q(email=email)):
                 raise ValidationError('uncorrect email/username')
 
         return data
 
 
-class GetTokenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'username',
-            'confirmation_code'
-        ]
+class GetTokenSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        max_length=150,
+    )
+    confirmation_code = serializers.CharField()
+
+    def validate(sef, data):
+        username = data['username']
+        code = data['confirmation_code']
+
+        UnicodeUsernameValidator()(username)
+        get_object_or_404(User, username=username)
+
+        if len(code) < MIN_CODE_LEN:
+            raise ValidationError('invalid code')
+
+        return data
